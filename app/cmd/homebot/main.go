@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/asyncee/homebot/internal/config"
-	"github.com/asyncee/homebot/internal/logging"
+	"github.com/asyncee/homebot/pkg/logging"
 )
 
 func main() {
