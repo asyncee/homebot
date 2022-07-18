@@ -28,11 +28,10 @@ type Torrent struct {
 }
 
 type RutrackerClient struct {
-	Username   string
-	Password   string
-	Jar        http.CookieJar
-	persistent bool
-	logger     logging.Logger
+	Username string
+	Password string
+	Jar      http.CookieJar
+	logger   logging.Logger
 }
 
 func NewClient(username, password string, persistent bool) (*RutrackerClient, error) {
@@ -56,11 +55,10 @@ func NewClient(username, password string, persistent bool) (*RutrackerClient, er
 	}
 
 	return &RutrackerClient{
-		Username:   username,
-		Password:   password,
-		Jar:        jar,
-		logger:     logging.GetLogger(),
-		persistent: persistent,
+		Username: username,
+		Password: password,
+		Jar:      jar,
+		logger:   logging.GetLogger(),
 	}, nil
 }
 
@@ -86,14 +84,15 @@ func (c *RutrackerClient) login() error {
 	if resp.StatusCode != 302 {
 		return fmt.Errorf("rutracker.org: bad response to login request: %s, redirect expected", resp.Status)
 	}
-
-	if c.persistent {
-		persistentJar := c.Jar.(*cookiejar.Jar)
-		persistentJar.Save()
-	}
-
+	c.saveCookies()
 	c.logger.Info("msg", "successfully logged-in to rutracker.org")
 	return nil
+}
+
+func (c *RutrackerClient) saveCookies() {
+	if persistentJar, ok := c.Jar.(*cookiejar.Jar); ok {
+		persistentJar.Save()
+	}
 }
 
 func (c *RutrackerClient) Search(query string) ([]Torrent, error) {
