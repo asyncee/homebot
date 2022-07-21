@@ -10,7 +10,8 @@ import (
 
 type Handlers struct {
 	fx.In
-	OnSearchText OnSearchHandler
+	OnSearchText         OnSearchHandler
+	OnInlineQueryHandler OnInlineQueryHandler
 }
 
 type TelegramUserId int64
@@ -44,6 +45,7 @@ func (b *Bot) setupMiddleware() {
 
 func (b *Bot) setupHandlers(handlers Handlers) {
 	b.bot.Handle("/start", onStartCommand)
+	b.bot.Handle(tele.OnQuery, handlers.OnInlineQueryHandler.Handle)
 	b.bot.Handle(tele.OnText, handlers.OnSearchText.Handle)
 }
 

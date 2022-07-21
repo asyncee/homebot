@@ -18,6 +18,8 @@ type OnSearchHandler struct {
 func (h *OnSearchHandler) Handle(c tele.Context) error {
 	query := strings.TrimSpace(strings.TrimPrefix(c.Text(), "@"+c.Bot().Me.Username))
 
+	// TODO: extract TorrentsCountByNameQuery
+
 	torrents, err := h.Repo.FindByName(context.TODO(), query)
 	if err != nil {
 		return c.Send(fmt.Sprintf("Ошибка: %s", err.Error()))
