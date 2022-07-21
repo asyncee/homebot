@@ -18,10 +18,6 @@ func provideTelegramBot(
 	}
 
 	lc.Append(fx.Hook{
-		// To mitigate the impact of deadlocks in application startup and
-		// shutdown, Fx imposes a time limit on OnStart and OnStop hooks. By
-		// default, hooks have a total of 15 seconds to complete. Timeouts are
-		// passed via Go's usual context.Context.
 		OnStart: func(context.Context) error {
 			logger.Debug("msg", "starting bot...")
 			go bot.Run()

@@ -19,8 +19,8 @@ func main() {
 		logging.Module,
 		torrentsinfra.Module,
 		fx.Provide(
-			func(cfg config.Config) telegram.BotToken {
-				return cfg.Telegram.Token
+			func(cfg config.Config) (telegram.BotToken, telegram.TelegramAdmins) {
+				return cfg.Telegram.Token, cfg.Telegram.Admins
 			},
 			func(cfg config.Config) (rutracker.Username, rutracker.Password) {
 				return cfg.Rutracker.Login, cfg.Rutracker.Password

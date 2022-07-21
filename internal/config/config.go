@@ -10,8 +10,8 @@ import (
 
 type Config struct {
 	Telegram struct {
-		Token  telegram.BotToken `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
-		Admins []int64           `env:"TELEGRAM_BOT_ADMINS" env-required:"true"`
+		Token  telegram.BotToken       `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
+		Admins telegram.TelegramAdmins `env:"TELEGRAM_BOT_ADMINS" env-required:"true"`
 	}
 	Rutracker struct {
 		Login    rutracker.Username `env:"RUTRACKER_LOGIN" env-required:"true"`

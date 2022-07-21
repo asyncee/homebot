@@ -5,6 +5,7 @@ import (
 
 	"go.uber.org/fx"
 	tele "gopkg.in/telebot.v3"
+	"gopkg.in/telebot.v3/middleware"
 )
 
 type Handlers struct {
@@ -12,8 +13,20 @@ type Handlers struct {
 	OnSearchText OnSearchHandler
 }
 
+type TelegramUserId int64
+type TelegramAdmins []TelegramUserId
+
+func (t TelegramAdmins) toInt64Slice() []int64 {
+	result := make([]int64, len(t))
+	for i := range t {
+		result = append(result, int64(t[i]))
+	}
+	return result
+}
+
 type Bot struct {
-	bot *tele.Bot
+	bot    *tele.Bot
+	admins TelegramAdmins
 }
 
 func (b *Bot) Run() {
@@ -24,9 +37,12 @@ func (b *Bot) Stop() {
 	b.bot.Stop()
 }
 
-func (b *Bot) setupHandlers(handlers Handlers) {
-	// TODO: admin middleware
+func (b *Bot) setupMiddleware() {
+	b.bot.Use(middleware.IgnoreVia())
+	b.bot.Use(middleware.Whitelist(b.admins.toInt64Slice()...))
+}
 
+func (b *Bot) setupHandlers(handlers Handlers) {
 	b.bot.Handle("/start", onStartCommand)
 	b.bot.Handle(tele.OnText, handlers.OnSearchText.Handle)
 }
@@ -37,6 +53,7 @@ type BotParams struct {
 	fx.In
 	Token    BotToken
 	Handlers Handlers
+	Admins   TelegramAdmins
 }
 
 func NewBot(p BotParams) (*Bot, error) {
@@ -50,7 +67,8 @@ func NewBot(p BotParams) (*Bot, error) {
 		return nil, err
 	}
 
-	b := Bot{bot: telebot}
+	b := Bot{bot: telebot, admins: p.Admins}
+	b.setupMiddleware()
 	b.setupHandlers(p.Handlers)
 	return &b, nil
 }
