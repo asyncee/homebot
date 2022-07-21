@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime"
 	"net/http"
-	stdjar "net/http/cookiejar"
 	"net/url"
 	"sort"
 	"time"
@@ -27,38 +26,26 @@ type Torrent struct {
 	Category      string
 }
 
+type Username string
+type Password string
+
 type RutrackerClient struct {
-	Username string
-	Password string
+	Username Username
+	Password Password
 	Jar      http.CookieJar
 	logger   logging.Logger
 }
 
-func NewClient(username, password string, persistent bool) (*RutrackerClient, error) {
+func NewClient(username Username, password Password, jar http.CookieJar) (*RutrackerClient, error) {
 	if username == "" || password == "" {
 		return nil, errors.New("both username and password must be provided")
-	}
-	var jar http.CookieJar
-
-	if persistent {
-		persistentJar, err := cookiejar.New(nil)
-		if err != nil {
-			return nil, err
-		}
-		jar = persistentJar
-	} else {
-		inmemoryJar, err := stdjar.New(nil)
-		if err != nil {
-			return nil, err
-		}
-		jar = inmemoryJar
 	}
 
 	return &RutrackerClient{
 		Username: username,
 		Password: password,
 		Jar:      jar,
-		logger:   logging.GetLogger(),
+		logger:   logging.NewLogger(),
 	}, nil
 }
 
@@ -72,8 +59,8 @@ func (c *RutrackerClient) login() error {
 	}
 
 	resp, err := client.PostForm("https://rutracker.org/forum/login.php", url.Values{
-		"login_username": {c.Username},
-		"login_password": {c.Password},
+		"login_username": {string(c.Username)},
+		"login_password": {string(c.Password)},
 		"login":          {"%E2%F5%EE%E4"},
 	})
 	if err != nil {
@@ -140,7 +127,7 @@ func (c *RutrackerClient) Search(query string) ([]Torrent, error) {
 		c.logger.Error("msg", "failed to parse search results")
 		return nil, err
 	}
-	c.logger.Debug("msg", "parsed %d search result(s)", len(results))
+	c.logger.Debug("query", query, "parsed_results_count", len(results))
 
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Seeders > results[j].Seeders

@@ -3,17 +3,19 @@ package config
 import (
 	"log"
 
+	"github.com/asyncee/homebot/internal/telegram"
+	"github.com/asyncee/homebot/pkg/rutracker"
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
 	Telegram struct {
-		Token  string  `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
-		Admins []int64 `env:"TELEGRAM_BOT_ADMINS" env-required:"true"`
+		Token  telegram.BotToken `env:"TELEGRAM_BOT_TOKEN" env-required:"true"`
+		Admins []int64           `env:"TELEGRAM_BOT_ADMINS" env-required:"true"`
 	}
 	Rutracker struct {
-		Login    string `env:"RUTRACKER_LOGIN" env-required:"true"`
-		Password string `env:"RUTRACKER_PASSWORD" env-required:"true"`
+		Login    rutracker.Username `env:"RUTRACKER_LOGIN" env-required:"true"`
+		Password rutracker.Password `env:"RUTRACKER_PASSWORD" env-required:"true"`
 	}
 	Transmission struct {
 		RPCHost     string `env:"TRANSMISSION_RPC_HOST" env-default:"localhost"`

@@ -18,27 +18,37 @@ const (
 )
 
 type logger struct {
-	l log.Logger
+	logger log.Logger
 }
 
 func (lo *logger) Log(keyvals ...interface{}) error {
-	return lo.l.Log(keyvals...)
+	return lo.logger.Log(keyvals...)
 }
 
 func (lo *logger) Debug(keyvals ...interface{}) error {
-	return level.Debug(lo.l).Log(keyvals...)
+	return level.Debug(lo.logger).Log(keyvals...)
 }
 
 func (lo *logger) Info(keyvals ...interface{}) error {
-	return level.Info(lo.l).Log(keyvals...)
+	return level.Info(lo.logger).Log(keyvals...)
 }
 
 func (lo *logger) Warn(keyvals ...interface{}) error {
-	return level.Warn(lo.l).Log(keyvals...)
+	return level.Warn(lo.logger).Log(keyvals...)
 }
 
 func (lo *logger) Error(keyvals ...interface{}) error {
-	return level.Error(lo.l).Log(keyvals...)
+	return level.Error(lo.logger).Log(keyvals...)
+}
+
+func (lo *logger) Fatal(keyvals ...interface{}) {
+	log.WithPrefix(lo.logger, level.Key(), "fatal")
+	os.Exit(1)
+}
+
+func (lo *logger) Panic(keyvals ...interface{}) {
+	log.WithPrefix(lo.logger, level.Key(), "panic")
+	os.Exit(1)
 }
 
 type Logger interface {
@@ -47,14 +57,16 @@ type Logger interface {
 	Info(keyvals ...interface{}) error
 	Warn(keyvals ...interface{}) error
 	Error(keyvals ...interface{}) error
+	Fatal(keyvals ...interface{})
+	Panic(keyvals ...interface{})
 }
 
 func Setup(level string) {
 	logLevel = level
 }
 
-func GetLogger() Logger {
+func NewLogger() Logger {
 	l := log.NewLogfmtLogger(writer)
 	l = level.NewFilter(l, level.Allow(level.ParseDefault(logLevel, level.InfoValue())))
-	return &logger{l: l}
+	return &logger{logger: l}
 }

@@ -3,6 +3,7 @@ package rutracker
 import (
 	"io/ioutil"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -12,19 +13,23 @@ import (
 )
 
 func newClientWithAuth(t *testing.T) (*RutrackerClient, error) {
-	var login, password string
-	if login = os.Getenv("RUTRACKER_LOGIN"); login == "" {
+	var username, password string
+	if username = os.Getenv("RUTRACKER_LOGIN"); username == "" {
 		t.Skip("Please, set RUTRACKER_LOGIN to run this test")
 	}
 	if password = os.Getenv("RUTRACKER_PASSWORD"); password == "" {
 		t.Skip("Please, set RUTRACKER_PASSWORD to run this test")
 	}
-	return newClient(login, password)
+	return newClient(Username(username), Password(password))
 }
 
-func newClient(login, password string) (*RutrackerClient, error) {
+func newClient(username Username, password Password) (*RutrackerClient, error) {
 	time.Sleep(5 * time.Second) // Prevent too frequent queries to rutracker.
-	return NewClient(login, password, false)
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, err
+	}
+	return NewClient(username, password, jar)
 }
 
 func TestLoginEmptyFields(t *testing.T) {
