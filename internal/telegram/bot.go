@@ -24,7 +24,7 @@ func (b *Bot) Stop() {
 	b.bot.Stop()
 }
 
-func (b *Bot) SetupHandlers(handlers Handlers) {
+func (b *Bot) setupHandlers(handlers Handlers) {
 	// TODO: admin middleware
 
 	b.bot.Handle("/start", onStartCommand)
@@ -51,6 +51,6 @@ func NewBot(p BotParams) (*Bot, error) {
 	}
 
 	b := Bot{bot: telebot}
-	b.SetupHandlers(p.Handlers)
+	b.setupHandlers(p.Handlers)
 	return &b, nil
 }
