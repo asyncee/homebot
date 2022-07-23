@@ -7,25 +7,29 @@ import (
 	"github.com/hekmon/transmissionrpc/v2"
 )
 
-type TransmissionService struct {
+type TransmissionClient struct {
 	client *transmissionrpc.Client
 }
 
-func New(
-	host string,
-	user string,
-	password string,
-) (*TransmissionService, error) {
-	client, err := transmissionrpc.New(host, user, password, nil)
+type Host string
+type User string
+type Password string
+
+func NewClient(
+	host Host,
+	user User,
+	password Password,
+) (*TransmissionClient, error) {
+	client, err := transmissionrpc.New(string(host), string(user), string(password), nil)
 	if err != nil {
 		return nil, err
 	}
-	return &TransmissionService{
+	return &TransmissionClient{
 		client: client,
 	}, nil
 }
 
-func (s *TransmissionService) TestConnection() error {
+func (s *TransmissionClient) TestConnection() error {
 	ctx, cancel := context.WithCancel(context.TODO())
 	ok, serverVersion, serverMinimumVersion, err := s.client.RPCVersion(ctx)
 	defer cancel()
@@ -43,7 +47,7 @@ func (s *TransmissionService) TestConnection() error {
 	return nil
 }
 
-func (s *TransmissionService) ListTorrents() ([]transmissionrpc.Torrent, error) {
+func (s *TransmissionClient) ListTorrents() ([]transmissionrpc.Torrent, error) {
 	torrents, err := s.client.TorrentGetAll(context.TODO())
 	if err != nil {
 		return nil, err
@@ -51,17 +55,17 @@ func (s *TransmissionService) ListTorrents() ([]transmissionrpc.Torrent, error) 
 	return torrents, nil
 }
 
-type DownloadedTorrent struct {
+type Torrent struct {
 	ID   int64
 	Name string
 }
 
-func (s *TransmissionService) DownloadTorrent(filepath string) (*DownloadedTorrent, error) {
+func (s *TransmissionClient) DownloadTorrent(filepath string) (*Torrent, error) {
 	torrent, err := s.client.TorrentAddFile(context.TODO(), filepath)
 	if err != nil {
 		return nil, err
 	}
-	return &DownloadedTorrent{
+	return &Torrent{
 		ID:   *torrent.ID,
 		Name: *torrent.Name,
 	}, nil
@@ -76,7 +80,7 @@ const (
 	TorrentError   = 4
 )
 
-func (s *TransmissionService) TorrentIsDone(torrentId int64) (TorrentStatus, error) {
+func (s *TransmissionClient) TorrentIsDone(torrentId int64) (TorrentStatus, error) {
 	torrents, err := s.client.TorrentGet(context.TODO(), []string{"status"}, []int64{torrentId})
 	if err != nil {
 		return TorrentError, err

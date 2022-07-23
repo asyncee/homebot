@@ -3,6 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/asyncee/homebot/internal/torrents/application"
@@ -12,16 +13,15 @@ import (
 	tele "gopkg.in/telebot.v3"
 )
 
-type OnInlineQueryHandler struct {
+type InlineQueryHandler struct {
 	fx.In
 	Logger logging.Logger
 	Repo   application.TorrentRepository
 }
 
-func (h *OnInlineQueryHandler) Handle(c tele.Context) error {
+func (h *InlineQueryHandler) Handle(c tele.Context) error {
 	text := c.Query().Text
-
-	h.Logger.Info("inline_query", text)
+	h.Logger.Debug("inline_query", text)
 
 	if text == "" {
 		return nil
@@ -46,7 +46,7 @@ func (h *OnInlineQueryHandler) Handle(c tele.Context) error {
 	})
 }
 
-func (h *OnInlineQueryHandler) articleResult(torrent domain.Torrent) *tele.ArticleResult {
+func (h *InlineQueryHandler) articleResult(torrent domain.Torrent) *tele.ArticleResult {
 	dsc := fmt.Sprintf("%s · %s · %s · %d на раздаче", torrent.Category, torrent.Size, torrent.Status, torrent.Seeders)
 	thumbnail := "https://cdn-icons-png.flaticon.com/512/2521/2521768.png"
 	movieCategories := []string{
@@ -68,6 +68,6 @@ func (h *OnInlineQueryHandler) articleResult(torrent domain.Torrent) *tele.Artic
 		HideURL:     false,
 		ThumbURL:    thumbnail,
 	}
-	result.SetResultID(torrent.ID)
+	result.SetResultID(strconv.Itoa(torrent.ID))
 	return result
 }

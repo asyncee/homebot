@@ -6,17 +6,20 @@ import (
 	"strings"
 
 	"github.com/asyncee/homebot/internal/torrents/application"
+	"github.com/asyncee/homebot/pkg/logging"
 	"go.uber.org/fx"
 	tele "gopkg.in/telebot.v3"
 )
 
-type OnSearchHandler struct {
+type TextHandler struct {
 	fx.In
-	Repo application.TorrentRepository
+	Logger logging.Logger
+	Repo   application.TorrentRepository
 }
 
-func (h *OnSearchHandler) Handle(c tele.Context) error {
+func (h *TextHandler) Handle(c tele.Context) error {
 	query := strings.TrimSpace(strings.TrimPrefix(c.Text(), "@"+c.Bot().Me.Username))
+	h.Logger.Debug("text", query)
 
 	// TODO: extract TorrentsCountByNameQuery
 

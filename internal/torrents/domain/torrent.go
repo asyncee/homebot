@@ -1,7 +1,7 @@
 package domain
 
 type Torrent struct {
-	ID                string
+	ID                int
 	Status            string
 	Name              string
 	Size              string

@@ -6,6 +6,7 @@ import (
 	"github.com/asyncee/homebot/internal/torrentsinfra"
 	"github.com/asyncee/homebot/pkg/logging"
 	"github.com/asyncee/homebot/pkg/rutracker"
+	"github.com/asyncee/homebot/pkg/transmission"
 	"go.uber.org/fx"
 )
 
@@ -15,17 +16,10 @@ func main() {
 	app := fx.New(
 		telegram.Module,
 		rutracker.Module,
+		transmission.Module,
 		config.Module,
 		logging.Module,
 		torrentsinfra.Module,
-		fx.Provide(
-			func(cfg config.Config) (telegram.BotToken, telegram.TelegramAdmins) {
-				return cfg.Telegram.Token, cfg.Telegram.Admins
-			},
-			func(cfg config.Config) (rutracker.Username, rutracker.Password) {
-				return cfg.Rutracker.Login, cfg.Rutracker.Password
-			},
-		),
 	)
 	app.Run()
 }

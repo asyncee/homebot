@@ -2,4 +2,10 @@ package torrentsinfra
 
 import "go.uber.org/fx"
 
-var Module = fx.Provide(NewRutrackerTorrentRepository)
+var Module = fx.Options(
+	fx.Provide(
+		NewRutrackerTorrentRepository,
+		NewDownloader,
+		NewTransmissionService,
+	),
+)

@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/go-kit/log v0.2.1
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/google/go-cmp v0.5.8
 	github.com/hekmon/transmissionrpc/v2 v2.0.1
 	github.com/ilyakaznacheev/cleanenv v1.3.0

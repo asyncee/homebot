@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/asyncee/homebot/internal/telegram"
+	"github.com/asyncee/homebot/internal/torrentsinfra"
 	"github.com/asyncee/homebot/pkg/rutracker"
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -24,9 +25,9 @@ type Config struct {
 		WebUiLink   string `env:"TRANSMISSION_WEB_UI_LINK" env-default:"http://localhost:9091/transmission/web"`
 	}
 	App struct {
-		DownloadTorrentsTo               string `env:"DOWNLOAD_DIR" env-required:"true"`
-		PollTorrentStatusTimeoutSeconds  int    `env:"POLL_TORRENT_STATUS_TIMEOUT_SECONDS" env-default:"3600"`
-		PollTorrentStatusDurationSeconds int    `env:"POLL_TORRENT_STATUS_DURATION_SECONDS" env-default:"5"`
+		DownloadTorrentsTo               torrentsinfra.DownloadTorrentsDir `env:"DOWNLOAD_DIR" env-required:"true"`
+		PollTorrentStatusTimeoutSeconds  int                               `env:"POLL_TORRENT_STATUS_TIMEOUT_SECONDS" env-default:"3600"`
+		PollTorrentStatusDurationSeconds int                               `env:"POLL_TORRENT_STATUS_DURATION_SECONDS" env-default:"5"`
 	}
 }
 
