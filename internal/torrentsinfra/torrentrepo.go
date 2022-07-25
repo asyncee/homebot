@@ -18,6 +18,7 @@ func NewRutrackerTorrentRepository(
 	return &RutrackerTorrentsRepository{
 		client: client,
 		logger: logger,
+		cache:  lru.New(1000),
 	}
 }
 
