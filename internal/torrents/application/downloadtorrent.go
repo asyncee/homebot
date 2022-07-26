@@ -48,7 +48,7 @@ func (u *DownloadTorrentUsecase) Execute(torrentID int, notifier Notifier) error
 	}
 
 	if status == TorrentDownloaded {
-		notifier.NotifyText("Скачалось!", torrent.Name)
+		notifier.NotifyText("Скачалось! %s", torrent.Name)
 		return nil
 	}
 

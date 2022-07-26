@@ -51,7 +51,10 @@ func (re *RutrackerTorrentsRepository) FindByName(ctx context.Context, name stri
 
 func (re *RutrackerTorrentsRepository) FindByID(ctx context.Context, id int) (*domain.Torrent, error) {
 	if torrent, ok := re.cache.Get(id); ok {
-		return torrent.(*domain.Torrent), nil
+		if t, ok := torrent.(domain.Torrent); ok {
+			return &t, nil
+		}
+		return nil, fmt.Errorf("failed to cast cached torrent to (domain.Torrent): invalid type (got %v)", torrent)
 	}
 	return nil, fmt.Errorf("can't find torrent by id: key %d not found in cache", id)
 }

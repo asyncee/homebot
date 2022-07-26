@@ -19,10 +19,15 @@ func (no *notifier) Notify(notification application.Notification) error {
 	if notification.Link == nil {
 		return no.ctx.Send(notification.Text)
 	}
-	r := no.ctx.Bot().NewMarkup()
+	markup := &tele.ReplyMarkup{}
+	markup.Inline(
+		markup.Row(
+			markup.URL(notification.Link.Text, notification.Link.Url),
+		),
+	)
 	return no.ctx.Send(
 		notification.Text,
-		r.URL(notification.Link.Text, notification.Link.Url),
+		markup,
 	)
 }
 
