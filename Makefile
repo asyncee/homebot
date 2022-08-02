@@ -26,3 +26,14 @@ clean:
 .PHONY: run
 run:
 	go run cmd/homebot/main.go
+
+.PHONY: docker-build
+docker-build:
+	docker build --tag homebot:$$(git describe --tags) .
+	docker tag homebot:$$(git describe --tags) asyncee/homebot:$$(git describe --tags)
+	docker tag homebot:$$(git describe --tags) asyncee/homebot:latest
+	docker push asyncee/homebot -a
+
+.PHONY: docker-run
+docker-run:
+	docker run --rm --env-file=.env asyncee/homebot
