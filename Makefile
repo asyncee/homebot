@@ -22,3 +22,7 @@ build: clean build-linux build-osx
 clean:
 	@echo "Cleaning..."
 	@rm -Rf $(BUILD_DIR)
+
+.PHONY: run
+run:
+	go run cmd/homebot/main.go
